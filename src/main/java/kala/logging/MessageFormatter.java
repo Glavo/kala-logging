@@ -3,6 +3,7 @@ package kala.logging;
 import java.util.Arrays;
 
 // @ValueBased
+@SuppressWarnings("DuplicatedCode")
 public final class MessageFormatter {
     private final String format;
     private final long[] markers;
@@ -64,35 +65,86 @@ public final class MessageFormatter {
         return new MessageFormatter(builder.toString(), markersBuilder.toArray());
     }
 
+    public static String format(String format, Object... args) {
+        return format(new StringBuilder(), format, args).toString();
+    }
+
+    public static StringBuilder format(StringBuilder builder, String format, Object... args) {
+        final int formatLength = format.length();
+        int count = 0;
+
+        for (int i = 0; i < formatLength; i++) {
+            final char ch = format.charAt(i);
+            if (ch == '{' && i + 1 < formatLength) {
+                if (format.charAt(i + 1) == '}') {
+                    append(builder, args, count++);
+                    i++;
+                    continue;
+                }
+
+                int end = format.indexOf('}', i + 2);
+                if (end < 0) {
+                    builder.append('{');
+                    continue;
+                }
+
+                int n = parseInt(format, i + 1, end);
+                if (n < 0) {
+                    builder.append('{');
+                    continue;
+                }
+                append(builder, args, n);
+                i = end;
+                continue;
+            } else if (ch == '\\') {
+                if (i + 1 < formatLength) {
+                    final char ch1 = format.charAt(i + 1);
+                    if (ch1 == '{') {
+                        builder.append('{');
+                        i++;
+                        continue;
+                    } else if (ch1 == '\\' && i + 2 < formatLength && format.charAt(i + 2) == '{') {
+                        builder.append('\\');
+                        i++;
+                        continue;
+                    }
+                }
+            }
+
+            builder.append(ch);
+        }
+        return builder;
+    }
+
     public String format(Object... args) {
         return format(new StringBuilder(), args).toString();
     }
 
-    public StringBuilder format(StringBuilder res, Object... args) {
+    public StringBuilder format(StringBuilder builder, Object... args) {
         int markersLength = markers.length;
         if (markersLength == 0) {
-            res.append(format);
-            return res;
+            builder.append(format);
+            return builder;
         }
 
         int previousOffset = getOffset(markers[0]);
 
-        res.append(format, 0, previousOffset);
-        append(res, args, getNumber(markers[0]));
+        builder.append(format, 0, previousOffset);
+        append(builder, args, getNumber(markers[0]));
 
         for (int i = 1; i < markersLength; i++) {
             long marker = markers[i];
             int number = getNumber(marker);
             int offset = getOffset(marker);
 
-            res.append(format, previousOffset + 1, offset);
-            append(res, args, number);
+            builder.append(format, previousOffset + 1, offset);
+            append(builder, args, number);
 
             previousOffset = offset;
         }
 
-        res.append(format, previousOffset + 1, format.length());
-        return res;
+        builder.append(format, previousOffset + 1, format.length());
+        return builder;
     }
 
     public String toDebugString() {
