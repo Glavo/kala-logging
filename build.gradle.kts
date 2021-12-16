@@ -2,18 +2,24 @@ plugins {
     java
 }
 
-group = "org.glavo.kala"
-version = "0.1.0-SNAPSHOT"
+allprojects {
+    apply {
+        plugin("java")
+    }
 
-repositories {
-    mavenCentral()
+    group = "org.glavo.kala"
+    version = "0.1.0-SNAPSHOT"
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
+        testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+    }
+
 }
-
-dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-}
-
 
 val java9SourceDir = "src/main/java9"
 val java9ClassesDir = file("$buildDir/classes/java9")
