@@ -3,6 +3,8 @@ package kala.logging;
 import java.util.function.Supplier;
 
 public abstract class Logger {
+    public static final String ROOT_LOGGER_NAME = "ROOT";
+
     private int levelSeverity;
 
     public abstract String getName();
