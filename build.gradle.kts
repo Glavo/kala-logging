@@ -21,6 +21,10 @@ allprojects {
 
 }
 
+tasks.compileJava {
+    options.release.set(8)
+}
+
 val java9SourceDir = "src/main/java9"
 val java9ClassesDir = file("$buildDir/classes/java9")
 
@@ -54,4 +58,8 @@ tasks.jar {
 
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
+}
+
+tasks.withType<GenerateModuleMetadata>().configureEach {
+    enabled = false
 }

@@ -7,7 +7,7 @@ public final class Level implements Comparable<Level>, Serializable {
     public static final int TRACE_SEVERITY = 400;
     public static final int DEBUG_SEVERITY = 500;
     public static final int INFO_SEVERITY = 800;
-    public static final int WARNING_SEVERITY = 900;
+    public static final int WARN_SEVERITY = 900;
     public static final int ERROR_SEVERITY = 1000;
     public static final int OFF_SEVERITY = Integer.MAX_VALUE;
 
@@ -15,7 +15,7 @@ public final class Level implements Comparable<Level>, Serializable {
     public static final Level TRACE = new Level("TRACE", TRACE_SEVERITY);
     public static final Level DEBUG = new Level("DEBUG", DEBUG_SEVERITY);
     public static final Level INFO = new Level("INFO", INFO_SEVERITY);
-    public static final Level WARNING = new Level("WARNING", WARNING_SEVERITY);
+    public static final Level WARN = new Level("WARN", WARN_SEVERITY);
     public static final Level ERROR = new Level("ERROR", ERROR_SEVERITY);
     public static final Level OFF = new Level("OFF", OFF_SEVERITY);
 
@@ -53,7 +53,7 @@ public final class Level implements Comparable<Level>, Serializable {
             return INFO;
         }
         if ("WARNING".equalsIgnoreCase(name)) {
-            return WARNING;
+            return WARN;
         }
         if ("ERROR".equalsIgnoreCase(name)) {
             return ERROR;
@@ -78,8 +78,8 @@ public final class Level implements Comparable<Level>, Serializable {
                 return DEBUG;
             case INFO_SEVERITY:
                 return INFO;
-            case WARNING_SEVERITY:
-                return WARNING;
+            case WARN_SEVERITY:
+                return WARN;
             case ERROR_SEVERITY:
                 return ERROR;
             case OFF_SEVERITY:

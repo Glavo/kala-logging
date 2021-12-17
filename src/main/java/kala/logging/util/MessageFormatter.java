@@ -1,4 +1,4 @@
-package kala.logging;
+package kala.logging.util;
 
 import java.util.Arrays;
 
@@ -11,6 +11,57 @@ public final class MessageFormatter {
     private MessageFormatter(String format, long[] markers) {
         this.format = format;
         this.markers = markers;
+    }
+
+    public static String format(String format, Object... args) {
+        return format(new StringBuilder(), format, args).toString();
+    }
+
+    public static StringBuilder format(StringBuilder builder, String format, Object... args) {
+        final int formatLength = format.length();
+        int count = 0;
+
+        for (int i = 0; i < formatLength; i++) {
+            final char ch = format.charAt(i);
+            if (ch == '{' && i + 1 < formatLength) {
+                if (format.charAt(i + 1) == '}') {
+                    append(builder, args, count++);
+                    i++;
+                    continue;
+                }
+
+                int end = format.indexOf('}', i + 2);
+                if (end < 0) {
+                    builder.append('{');
+                    continue;
+                }
+
+                int n = parseInt(format, i + 1, end);
+                if (n < 0) {
+                    builder.append('{');
+                    continue;
+                }
+                append(builder, args, n);
+                i = end;
+                continue;
+            } else if (ch == '\\') {
+                if (i + 1 < formatLength) {
+                    final char ch1 = format.charAt(i + 1);
+                    if (ch1 == '{') {
+                        builder.append('{');
+                        i++;
+                        continue;
+                    } else if (ch1 == '\\' && i + 2 < formatLength && format.charAt(i + 2) == '{') {
+                        builder.append('\\');
+                        i++;
+                        continue;
+                    }
+                }
+            }
+
+            builder.append(ch);
+        }
+        return builder;
     }
 
     public static MessageFormatter parse(String format) {
@@ -63,57 +114,6 @@ public final class MessageFormatter {
             builder.append(ch);
         }
         return new MessageFormatter(builder.toString(), markersBuilder.toArray());
-    }
-
-    public static String format(String format, Object... args) {
-        return format(new StringBuilder(), format, args).toString();
-    }
-
-    public static StringBuilder format(StringBuilder builder, String format, Object... args) {
-        final int formatLength = format.length();
-        int count = 0;
-
-        for (int i = 0; i < formatLength; i++) {
-            final char ch = format.charAt(i);
-            if (ch == '{' && i + 1 < formatLength) {
-                if (format.charAt(i + 1) == '}') {
-                    append(builder, args, count++);
-                    i++;
-                    continue;
-                }
-
-                int end = format.indexOf('}', i + 2);
-                if (end < 0) {
-                    builder.append('{');
-                    continue;
-                }
-
-                int n = parseInt(format, i + 1, end);
-                if (n < 0) {
-                    builder.append('{');
-                    continue;
-                }
-                append(builder, args, n);
-                i = end;
-                continue;
-            } else if (ch == '\\') {
-                if (i + 1 < formatLength) {
-                    final char ch1 = format.charAt(i + 1);
-                    if (ch1 == '{') {
-                        builder.append('{');
-                        i++;
-                        continue;
-                    } else if (ch1 == '\\' && i + 2 < formatLength && format.charAt(i + 2) == '{') {
-                        builder.append('\\');
-                        i++;
-                        continue;
-                    }
-                }
-            }
-
-            builder.append(ch);
-        }
-        return builder;
     }
 
     public String format(Object... args) {

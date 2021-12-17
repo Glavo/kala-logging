@@ -1,6 +1,6 @@
 package org.glavo.kala.logging.benchmark;
 
-import kala.logging.MessageFormatter;
+import kala.logging.util.MessageFormatter;
 import org.openjdk.jmh.annotations.*;
 
 import java.text.MessageFormat;
